@@ -1,0 +1,81 @@
+package com.williamcherres.notes_api.notes;
+
+import com.williamcherres.notes_api.dto.CreateNoteRequest;
+import com.williamcherres.notes_api.dto.NoteResponse;
+import com.williamcherres.notes_api.error.NoteForbiddenException;
+import com.williamcherres.notes_api.error.NoteNotFoundException;
+import com.williamcherres.notes_api.model.Note;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import java.util.UUID;
+
+@Service
+public class NoteService {
+
+    private final NoteRepository repo;
+
+    public NoteService(NoteRepository repo) {
+        this.repo = repo;
+    }
+
+    public NoteResponse create(UUID userId, CreateNoteRequest req) {
+        Note note = new Note();
+        note.setOwnerUserId(userId);         
+        note.setTitle(req.title());
+        note.setContent(req.content());
+
+        Note saved = repo.save(note);
+        return toResponse(saved);
+    }
+
+    public NoteResponse getById(UUID userId, Long id) {
+       
+        Note note = repo.findByIdAndOwnerUserId(id, userId)
+                .orElseThrow(() -> new NoteNotFoundException(id));
+
+        return toResponse(note);
+    }
+
+    public NoteResponse update(UUID userId, Long id, CreateNoteRequest req) {
+        Note existing = repo.findById(id)
+                .orElseThrow(() -> new NoteNotFoundException(id));
+
+      
+        if (!existing.getOwnerUserId().equals(userId)) {
+            throw new NoteForbiddenException(id);
+        }
+
+        existing.setTitle(req.title());
+        existing.setContent(req.content());
+
+        return toResponse(repo.save(existing));
+    }
+
+    public void delete(UUID userId, Long id) {
+        Note existing = repo.findById(id)
+                .orElseThrow(() -> new NoteNotFoundException(id));
+
+        if (!existing.getOwnerUserId().equals(userId)) {
+            throw new NoteForbiddenException(id);
+        }
+
+        repo.delete(existing);
+    }
+
+    public Page<NoteResponse> list(UUID userId, Pageable pageable) {
+    
+        return repo.findByOwnerUserId(userId, pageable).map(this::toResponse);
+    }
+
+    private NoteResponse toResponse(Note n) {
+        return new NoteResponse(
+                n.getId(),
+                n.getTitle(),
+                n.getContent(),
+                n.getCreatedAt(),
+                n.getUpdatedAt()
+        );
+    }
+}

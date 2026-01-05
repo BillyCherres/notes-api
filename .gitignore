@@ -1,0 +1,29 @@
+# Maven
+target/
+*.log
+.mvn/wrapper/maven-wrapper.jar
+
+# IntelliJ / Eclipse
+.idea/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+
+# Mac
+.DS_Store
+
+# Env / secrets
+.env
+*.env
+
+# Local DB files (if you ever used H2)
+data/
+*.mv.db
+*.trace.db
+*.db
+
+# Docker
+**/tmp/
