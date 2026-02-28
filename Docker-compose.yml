@@ -22,6 +22,7 @@ services:
       DB_URL: jdbc:postgresql://db:5432/notes
       DB_USER: notes_user
       DB_PASSWORD: notes_pass
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
 
 volumes:
   notes-db-data:
