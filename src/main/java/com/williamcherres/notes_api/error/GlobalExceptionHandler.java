@@ -7,7 +7,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import com.williamcherres.notes_api.error.NoteNotFoundException;
 import java.time.Instant;
 import java.util.List;
 import java.util.LinkedHashMap;
@@ -18,52 +17,63 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException ex,
-                                                     HttpServletRequest request) {
-    
+            HttpServletRequest request) {
+
         Map<String, String> firstMessagePerField = new LinkedHashMap<>();
-    
+
         ex.getBindingResult().getFieldErrors().forEach(fe -> {
             firstMessagePerField.putIfAbsent(
                     fe.getField(),
-                    fe.getDefaultMessage() != null ? fe.getDefaultMessage() : "Invalid value"
-            );
+                    fe.getDefaultMessage() != null ? fe.getDefaultMessage() : "Invalid value");
         });
-    
+
         List<ApiError.FieldError> fieldErrors = firstMessagePerField.entrySet().stream()
                 .map(e -> new ApiError.FieldError(e.getKey(), e.getValue()))
                 .toList();
-    
+
         ApiError body = new ApiError(
                 Instant.now(),
                 HttpStatus.BAD_REQUEST.value(),
                 "VALIDATION_ERROR",
                 "Request validation failed",
                 request.getRequestURI(),
-                fieldErrors
-        );
-    
+                fieldErrors);
+
         return ResponseEntity.badRequest().body(body);
     }
 
     @ExceptionHandler(NoteNotFoundException.class)
-        public ResponseEntity<ApiError> handleNotFound(NoteNotFoundException ex,
-                                               HttpServletRequest request) {
+    public ResponseEntity<ApiError> handleNotFound(NoteNotFoundException ex,
+            HttpServletRequest request) {
 
         ApiError body = new ApiError(
-            Instant.now(),
-            HttpStatus.NOT_FOUND.value(),
-            "NOT_FOUND",
-            ex.getMessage(),
-            request.getRequestURI(),
-            List.of()
-        );
+                Instant.now(),
+                HttpStatus.NOT_FOUND.value(),
+                "NOT_FOUND",
+                ex.getMessage(),
+                request.getRequestURI(),
+                List.of());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
-}
-    
+    }
 
     private ApiError.FieldError toApiFieldError(FieldError fe) {
         String msg = fe.getDefaultMessage() != null ? fe.getDefaultMessage() : "Invalid value";
         return new ApiError.FieldError(fe.getField(), msg);
+    }
+
+    @ExceptionHandler(EmailAlreadyInUseException.class)
+    public ResponseEntity<ApiError> handleEmailInUse(EmailAlreadyInUseException ex,
+            HttpServletRequest request) {
+
+        ApiError body = new ApiError(
+                Instant.now(),
+                HttpStatus.CONFLICT.value(),
+                "EMAIL_IN_USE",
+                ex.getMessage(),
+                request.getRequestURI(),
+                List.of());
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
     }
 }
