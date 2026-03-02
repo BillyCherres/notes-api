@@ -1,5 +1,6 @@
 package com.williamcherres.notes_api.auth;
 
+import com.williamcherres.notes_api.dto.LoginRequest;
 import com.williamcherres.notes_api.dto.RegisterRequest;
 import com.williamcherres.notes_api.dto.UserResponse;
 import jakarta.validation.Valid;
@@ -20,5 +21,11 @@ public class AuthController {
     public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterRequest req) {
         UserResponse created = service.register(req);
         return ResponseEntity.status(201).body(created);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<UserResponse> login(@Valid @RequestBody LoginRequest req) {
+        UserResponse user = service.login(req);
+        return ResponseEntity.ok(user);
     }
 }
