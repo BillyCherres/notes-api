@@ -17,6 +17,27 @@
     <java.version>17</java.version>
   </properties>
   <dependencies>
+    <!-- JWT -->
+    <!-- JWT API -->
+    <dependency>
+      <groupId>io.jsonwebtoken</groupId>
+      <artifactId>jjwt-api</artifactId>
+      <version>0.11.5</version>
+    </dependency>
+    <!-- JWT implementation (runtime only) -->
+    <dependency>
+      <groupId>io.jsonwebtoken</groupId>
+      <artifactId>jjwt-impl</artifactId>
+      <version>0.11.5</version>
+      <scope>runtime</scope>
+    </dependency>
+    <!-- JSON serializer for JWT -->
+    <dependency>
+      <groupId>io.jsonwebtoken</groupId>
+      <artifactId>jjwt-jackson</artifactId>
+      <version>0.11.5</version>
+      <scope>runtime</scope>
+    </dependency>
     <!-- security -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
