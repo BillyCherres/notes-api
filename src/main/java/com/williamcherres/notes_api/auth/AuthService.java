@@ -31,6 +31,7 @@ public class AuthService {
         u.setEmail(normalizedEmail);
         u.setPasswordHash(encoder.encode(req.password()));
         u.setEmailVerified(false);
+        u.setAdmin(false);
 
         User saved = users.save(u);
         return new UserResponse(saved.getId(), saved.getEmail(), saved.isEmailVerified());

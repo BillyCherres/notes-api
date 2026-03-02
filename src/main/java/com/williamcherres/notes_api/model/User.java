@@ -12,6 +12,9 @@ public class User {
     @GeneratedValue
     private UUID id;
 
+    @Column(nullable = false)
+    private boolean isAdmin = false;
+
     @Column(nullable = false, unique = true, length = 255)
     private String email;
 
@@ -24,23 +27,51 @@ public class User {
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
-    public User() {}
+    public User() {
+    }
 
     @PrePersist
     void onCreate() {
         this.createdAt = Instant.now();
     }
 
-    public UUID getId() { return id; }
+    public UUID getId() {
+        return id;
+    }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public String getEmail() {
+        return email;
+    }
 
-    public String getPasswordHash() { return passwordHash; }
-    public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-    public boolean isEmailVerified() { return emailVerified; }
-    public void setEmailVerified(boolean emailVerified) { this.emailVerified = emailVerified; }
+    public String getPasswordHash() {
+        return passwordHash;
+    }
 
-    public Instant getCreatedAt() { return createdAt; }
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
+    public boolean isEmailVerified() {
+        return emailVerified;
+    }
+
+    public void setEmailVerified(boolean emailVerified) {
+        this.emailVerified = emailVerified;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
+    }
 }
