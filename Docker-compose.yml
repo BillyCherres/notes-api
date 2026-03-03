@@ -12,7 +12,7 @@ services:
       - "5432:5432"
 
   api:
-    build: .               
+    build: .
     container_name: notes-api
     depends_on:
       - db
@@ -23,6 +23,21 @@ services:
       DB_USER: notes_user
       DB_PASSWORD: notes_pass
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
+  
+  frontend:
+    build:
+      context: https://github.com/BillyCherres/notes-web.git#feature/auth0
+    container_name: notes-frontend
+    depends_on:
+      - api
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: http://localhost:8080
+      VITE_AUTH0_DOMAIN: dev-battoy4bsiqoq11t.us.auth0.com
+      VITE_AUTH0_CLIENT_ID: kWZkWXi5ZRhkXmPm8c9PavJizL5QmeqJ
+      VITE_AUTH0_AUDIENCE: https://notes-api
+    command: ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
 
 volumes:
   notes-db-data:

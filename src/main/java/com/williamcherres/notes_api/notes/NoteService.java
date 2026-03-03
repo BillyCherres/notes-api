@@ -9,8 +9,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
-
 @Service
 public class NoteService {
 
@@ -20,9 +18,9 @@ public class NoteService {
         this.repo = repo;
     }
 
-    public NoteResponse create(UUID userId, CreateNoteRequest req) {
+    public NoteResponse create(String userId, CreateNoteRequest req) {
         Note note = new Note();
-        note.setOwnerUserId(userId);         
+        note.setOwnerUserId(userId);
         note.setTitle(req.title());
         note.setContent(req.content());
 
@@ -30,22 +28,22 @@ public class NoteService {
         return toResponse(saved);
     }
 
-    public NoteResponse getById(UUID userId, Long id) {
-       
+    public NoteResponse getById(String userId, Long id) {
         Note note = repo.findByIdAndOwnerUserId(id, userId)
                 .orElseThrow(() -> new NoteNotFoundException(id));
 
         return toResponse(note);
     }
 
-    public NoteResponse update(UUID userId, Long id, CreateNoteRequest req) {
-        Note existing = repo.findById(id)
-                .orElseThrow(() -> new NoteNotFoundException(id));
-
-      
-        if (!existing.getOwnerUserId().equals(userId)) {
-            throw new NoteForbiddenException(id);
-        }
+    public NoteResponse update(String userId, Long id, CreateNoteRequest req) {
+        // Fetch scoped to owner so we don't need a separate forbidden check
+        Note existing = repo.findByIdAndOwnerUserId(id, userId)
+                .orElseThrow(() -> {
+                    // Optional: differentiate 404 vs 403
+                    // If the note exists but isn't yours -> 403
+                    if (repo.existsById(id)) return new NoteForbiddenException(id);
+                    return new NoteNotFoundException(id);
+                });
 
         existing.setTitle(req.title());
         existing.setContent(req.content());
@@ -53,20 +51,21 @@ public class NoteService {
         return toResponse(repo.save(existing));
     }
 
-    public void delete(UUID userId, Long id) {
-        Note existing = repo.findById(id)
-                .orElseThrow(() -> new NoteNotFoundException(id));
-
-        if (!existing.getOwnerUserId().equals(userId)) {
-            throw new NoteForbiddenException(id);
+    public void delete(String userId, Long id) {
+        // Same idea: try deleting scoped to owner
+        boolean ownedExists = repo.existsByIdAndOwnerUserId(id, userId);
+        if (!ownedExists) {
+            // differentiate 404 vs 403
+            if (repo.existsById(id)) throw new NoteForbiddenException(id);
+            throw new NoteNotFoundException(id);
         }
 
-        repo.delete(existing);
+        repo.deleteByIdAndOwnerUserId(id, userId);
     }
 
-    public Page<NoteResponse> list(UUID userId, Pageable pageable) {
-    
-        return repo.findByOwnerUserId(userId, pageable).map(this::toResponse);
+    public Page<NoteResponse> list(String userId, Pageable pageable) {
+        return repo.findByOwnerUserId(userId, pageable)
+                .map(this::toResponse);
     }
 
     private NoteResponse toResponse(Note n) {

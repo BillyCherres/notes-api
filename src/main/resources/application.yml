@@ -7,8 +7,17 @@ spring:
     username: ${DB_USER}
     password: ${DB_PASSWORD}
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://dev-battoy4bsiqoq11t.us.auth0.com/
+
   jpa:
     hibernate:
-      ddl-auto: update   
+      ddl-auto: update
     show-sql: true
     open-in-view: false
+
+auth0:
+  audience: https://notes-api

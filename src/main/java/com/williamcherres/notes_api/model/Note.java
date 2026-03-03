@@ -2,7 +2,6 @@ package com.williamcherres.notes_api.model;
 
 import jakarta.persistence.*;
 import java.time.Instant;
-import java.util.UUID;
 
 @Entity
 @Table(name = "notes")
@@ -13,7 +12,7 @@ public class Note {
     private Long id;
 
     @Column(name = "owner_user_id", nullable = false, updatable = false)
-    private UUID ownerUserId;
+    private String ownerUserId;
 
     @Column(nullable = false, length = 100)
     private String title;
@@ -33,11 +32,11 @@ public class Note {
         return id;
     }
 
-    public UUID getOwnerUserId() {
+    public String getOwnerUserId() {
         return ownerUserId;
     }
 
-    public void setOwnerUserId(UUID ownerUserId) {
+    public void setOwnerUserId(String ownerUserId) {
         this.ownerUserId = ownerUserId;
     }
 
