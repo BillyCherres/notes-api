@@ -13,19 +13,23 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
-            .cors(Customizer.withDefaults()) // IMPORTANT: uses CorsConfigurationSource bean
-            .authorizeHttpRequests(auth -> auth
-                // allow preflight through without auth
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .csrf(csrf -> csrf.disable())
+                .cors(Customizer.withDefaults()) // IMPORTANT: uses CorsConfigurationSource bean
+                .authorizeHttpRequests(auth -> auth
+                        // allow preflight through without auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                // allow health if you want
-                .requestMatchers("/actuator/health").permitAll()
+                        
+                        .requestMatchers("/health").permitAll()
 
-                // everything else requires JWT
-                .anyRequest().authenticated()
-            )
-            .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
+                        .requestMatchers(HttpMethod.HEAD, "/health").permitAll()
+
+                        // allow health if you want
+                        .requestMatchers("/actuator/health").permitAll()
+
+                        // everything else requires JWT
+                        .anyRequest().authenticated())
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
 
         return http.build();
     }
