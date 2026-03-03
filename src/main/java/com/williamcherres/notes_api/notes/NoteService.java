@@ -41,7 +41,8 @@ public class NoteService {
                 .orElseThrow(() -> {
                     // Optional: differentiate 404 vs 403
                     // If the note exists but isn't yours -> 403
-                    if (repo.existsById(id)) return new NoteForbiddenException(id);
+                    if (repo.existsById(id))
+                        return new NoteForbiddenException(id);
                     return new NoteNotFoundException(id);
                 });
 
@@ -52,15 +53,14 @@ public class NoteService {
     }
 
     public void delete(String userId, Long id) {
-        // Same idea: try deleting scoped to owner
-        boolean ownedExists = repo.existsByIdAndOwnerUserId(id, userId);
-        if (!ownedExists) {
-            // differentiate 404 vs 403
-            if (repo.existsById(id)) throw new NoteForbiddenException(id);
-            throw new NoteNotFoundException(id);
-        }
+        Note existing = repo.findByIdAndOwnerUserId(id, userId)
+                .orElseThrow(() -> {
+                    if (repo.existsById(id))
+                        return new NoteForbiddenException(id);
+                    return new NoteNotFoundException(id);
+                });
 
-        repo.deleteByIdAndOwnerUserId(id, userId);
+        repo.delete(existing);
     }
 
     public Page<NoteResponse> list(String userId, Pageable pageable) {
@@ -74,7 +74,6 @@ public class NoteService {
                 n.getTitle(),
                 n.getContent(),
                 n.getCreatedAt(),
-                n.getUpdatedAt()
-        );
+                n.getUpdatedAt());
     }
 }
