@@ -17,7 +17,7 @@ public class Note {
     @Column(nullable = false, length = 100)
     private String title;
 
-    @Column(nullable = false, columnDefinition = "jsonb")
+    @Column(name = "content", nullable = false, columnDefinition = "jsonb")
     private String contentJson;
 
     @Column(nullable = false, updatable = false)

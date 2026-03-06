@@ -5,10 +5,10 @@ import jakarta.validation.constraints.Size;
 
 public record CreateNoteRequest(
     @NotBlank(message = "Title is required")
-    @Size(min = 1,max = 100, message = "title must be at most 100 characters")
+    @Size(min = 1, max = 100, message = "title must be at most 100 characters")
     String title,
 
     @NotBlank(message = "Content is required")
-    @Size(max = 10_000, message = "content must be at most 10000 characters")
-    String content
-){}
+    @Size(max = 200_000, message = "content must be at most 200000 characters")
+    String contentJson
+) {}
