@@ -5,7 +5,7 @@ import java.time.Instant;
 public record NoteResponse(
     Long id,
     String title,
-    String content,
+    String contentJson,
     Instant createdAt,
     Instant updatedAt
 ){}

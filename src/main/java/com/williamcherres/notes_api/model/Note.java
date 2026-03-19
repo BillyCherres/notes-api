@@ -17,8 +17,8 @@ public class Note {
     @Column(nullable = false, length = 100)
     private String title;
 
-    @Column(nullable = false, length = 10_000)
-    private String content;
+    @Column(name = "content", nullable = false, columnDefinition = "jsonb")
+    private String contentJson;
 
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
@@ -48,12 +48,12 @@ public class Note {
         this.title = title;
     }
 
-    public String getContent(){
-        return content;
+    public String getContentJson(){
+        return contentJson;
     }
 
-    public void setContent(String content){
-        this.content = content;
+    public void setContentJson(String content){
+        this.contentJson = content;
     }
 
     public Instant getCreatedAt(){

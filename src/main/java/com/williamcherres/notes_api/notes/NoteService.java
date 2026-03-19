@@ -22,7 +22,7 @@ public class NoteService {
         Note note = new Note();
         note.setOwnerUserId(userId);
         note.setTitle(req.title());
-        note.setContent(req.content());
+        note.setContentJson(req.contentJson());
 
         Note saved = repo.save(note);
         return toResponse(saved);
@@ -47,7 +47,7 @@ public class NoteService {
                 });
 
         existing.setTitle(req.title());
-        existing.setContent(req.content());
+        existing.setContentJson(req.contentJson());
 
         return toResponse(repo.save(existing));
     }
@@ -72,7 +72,7 @@ public class NoteService {
         return new NoteResponse(
                 n.getId(),
                 n.getTitle(),
-                n.getContent(),
+                n.getContentJson(),
                 n.getCreatedAt(),
                 n.getUpdatedAt());
     }
